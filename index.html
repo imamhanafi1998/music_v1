@@ -15,11 +15,20 @@
         const className = props.isMusicPlaying ? 'play active' : 'play';
         return <a onClick={props.onClick} href="#" title="Play video" className={className} />;
     }
+
     class Container extends React.Component {
         constructor(props) {
             super(props);
-            this.state = { isMusicPlaying: false };
+            this.state = { 
+                isMusicPlaying: false,
+                audioSrc: 'https://github.com/imamhanafi1998/music_v1/raw/main/music.mp3' // Using your MP3 file from GitHub
+            };
         }
+
+        componentDidMount() {
+            this.audio.src = this.state.audioSrc;
+        }
+
         handleClick() {
             if (this.state.isMusicPlaying) {
                 this.audio.pause();
@@ -31,17 +40,31 @@
                     isMusicPlaying: !prevState.isMusicPlaying
                 };
             });
-        };
+        }
+
+        handleFileChange(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const fileURL = URL.createObjectURL(file);
+                this.audio.src = fileURL;
+                this.audio.play();
+                this.setState({ isMusicPlaying: true });
+            }
+        }
+
         render() {
             const status = this.state.isMusicPlaying ? 'Playing' : 'Not playing :(';
             return (
                 <div>
                     <PlayButton onClick={this.handleClick.bind(this)} isMusicPlaying={this.state.isMusicPlaying} />
                     <audio id="audio" ref={(audioTag) => { this.audio = audioTag}} />
+                    <input type="file" id="files" name="files[]" onChange={this.handleFileChange.bind(this)} />
                 </div>
             );
         }
     }
+
     const placeWeWantToPutComponent = document.getElementById('hook');
     ReactDOM.render(<Container />, placeWeWantToPutComponent);
 </script>
